@@ -1,2 +1,2 @@
-# ci_sendgrid
-A Codeigniter 3 library to use Sendgrid API V3
+# CI 3 Sendgrid Library
+A simple, lightweight, minimalist, mini, tyni Codeigniter 3 library that implements Sendgrid API V3.
