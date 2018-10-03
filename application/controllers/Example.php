@@ -36,6 +36,10 @@ class Example extends CI_Controller {
 		# be ignored, but is always required)
 		$this->sendgrid->content('text/plain', 'My very nice example content... CI Rulezz!');
 
+		# You can attach files by passing the absolute path.
+		# Types will be automaticaly identified.
+		$this->sendgrid->attach('./somefile.pdf');
+
 		# Lets go!
 		$this->sendgrid->send();
 

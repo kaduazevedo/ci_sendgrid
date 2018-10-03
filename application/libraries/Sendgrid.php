@@ -6,6 +6,7 @@ Class Sendgrid{
 	private $cc_args 		= array();
 	private $bcc_args 		= array();
 	private $content_args 	= array();
+	private $attach_args 	= array();
 	private $from_args 		= null;
 	private $reply_to_args 	= null;
 	private $template_id 	= null;
@@ -51,7 +52,8 @@ Class Sendgrid{
 
 	public function send_at($timestamp)
 	{
-		if((bool)strtotime($timestamp)){
+		if((bool)strtotime($timestamp))
+		{
 			$timestamp = strtotime($timestamp);
 		}
 
@@ -83,7 +85,8 @@ Class Sendgrid{
 
 	public function template_data($key, $value)
 	{
-		if(!$this->dynamic_data){
+		if(!$this->dynamic_data)
+		{
 			$this->dynamic_data = new StdClass;
 		}
 
@@ -104,11 +107,34 @@ Class Sendgrid{
 		$this->content_args[] = $content;
 	}
 
+	public function attach($filepath, $filename = null)
+	{
+		if(!file_exists($filepath)){
+			die('File not found!');
+		}
+
+		$file_content = base64_encode(file_get_contents($filepath));
+
+		if(!$filename)
+		{
+			$filename = basename($filepath);
+		}
+
+		$file = new StdClass;
+
+		$file->content 		= $file_content;
+		$file->type 		= mime_content_type($filepath);
+		$file->filename 	= $filename;
+
+		$this->attach_args[] = $file;
+	}
+
 	private function mount()
 	{
 		$params = new StdClass;
 
 		$params->personalizations = array();
+		$params->attachments = array();
 
 		$personalization = new StdClass;
 
@@ -127,11 +153,12 @@ Class Sendgrid{
 
 		$params->content = $this->content_args;
 
-		if($this->template_id){
-			
+		if($this->template_id)
+		{
 			$params->template_id = $this->template_id;
 			
-			if($this->dynamic_data){
+			if($this->dynamic_data)
+			{
 				$personalization->dynamic_template_data = $this->dynamic_data;
 			}
 
@@ -139,24 +166,33 @@ Class Sendgrid{
 
 		$personalization->subject = $this->subject_str;
 
-		if($this->send_at){
+		if($this->send_at)
+		{
 			$params->send_at = $this->send_at;
 		}
 
 		$params->personalizations[] = $personalization;
+
+		if(!empty($this->attach_args))
+		{
+			foreach($this->attach_args as $k => $attach)
+			{
+				$params->attachments[] = $attach;	
+			}
+		}
 
 		return json_encode($params);
 	}
 
 	public function send()
 	{
-
 		$ch = curl_init();
 
 		curl_setopt($ch, CURLOPT_URL, 'https://api.sendgrid.com/v3/mail/send');
 		curl_setopt($ch, CURLOPT_POST, true);
 
-		$headers = [
+		$headers = 
+		[
 		   'authorization: Bearer '.$this->apikey,
 		   'Content-Type: application/json'
 		];
@@ -173,9 +209,12 @@ Class Sendgrid{
 
 		$data_result['code'] = $httpcode;
 
-		if(isset($result_obj->errors)){
+		if(isset($result_obj->errors))
+		{
 			$data_result['errors'] = $result_obj->errors;
-		} else {
+		} 
+		else 
+		{
 			$data_result['errors'] = null;
 		}
 
