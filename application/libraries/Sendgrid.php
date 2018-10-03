@@ -5,129 +5,107 @@ Class Sendgrid{
 	private $to_args 		= array();
 	private $cc_args 		= array();
 	private $bcc_args 		= array();
-
-	private $from_args 		= null;
-
-	private $reply_to_args 	= null;
-
 	private $content_args 	= array();
-
+	private $from_args 		= null;
+	private $reply_to_args 	= null;
 	private $template_id 	= null;
-
 	private $dynamic_data 	= null;
-
 	private $subject_str 	= null;
-
 	private $apikey 		= null;
-
 	private $send_at		= null;
 
-
-	public function __construct($params = null){
-
+	public function __construct($params = null)
+	{
 		$this->CI =& get_instance();
 		$this->CI->config->load('sendgrid');
 
 		$this->apikey = $params['apikey'];		
-
 	}
 
-	public function to($email, $name){
-
+	public function to($email, $name)
+	{
 		$to = new StdClass;
-
 		$to->email 	= $email;
 		$to->name 	= $name;
 
 		$this->to_args[] = $to;
-
 	}
 
-	public function cc($email, $name){
-
+	public function cc($email, $name)
+	{
 		$cc = new StdClass;
-
 		$cc->email 	= $email;
 		$cc->name 	= $name;
 
 		$this->cc_args[] = $cc;
-
 	}
 
-	public function bcc($email, $name){
-
+	public function bcc($email, $name)
+	{
 		$bcc = new StdClass;
-
 		$bcc->email 	= $email;
 		$bcc->name 		= $name;
 
 		$this->bcc_args[] = $bcc;
-
 	}
 
-	public function send_at($timestamp){
+	public function send_at($timestamp)
+	{
+		if((bool)strtotime($timestamp)){
+			$timestamp = strtotime($timestamp);
+		}
 
-		$this->send_at = $timestamp;
-		
+		$this->send_at = $timestamp;	
 	}
 
-	public function from($email, $name){
-
+	public function from($email, $name)
+	{
 		$from = new StdClass;
-
 		$from->email 	= $email;
 		$from->name 	= $name;
 
 		$this->from_args = $from;
-
 	}
 
-	public function reply_to($email, $name){
-
+	public function reply_to($email, $name)
+	{
 		$reply_to = new StdClass;
-
 		$reply_to->email 	= $email;
 		$reply_to->name 	= $name;
 
 		$this->reply_to_args = $reply_to;
-
 	}
 
-	public function template($id){
-
+	public function template($id)
+	{
 		$this->template_id = $id;
-
 	}
 
-	public function template_data($key, $value){
-
+	public function template_data($key, $value)
+	{
 		if(!$this->dynamic_data){
 			$this->dynamic_data = new StdClass;
 		}
 
 		$this->dynamic_data->{$key} = $value;
-
 	}
 
-	public function subject($subject){
-
+	public function subject($subject)
+	{
 		$this->subject_str = $subject;
-
 	}
 
-	public function content($type, $value){
-
+	public function content($type, $value)
+	{
 		$content = new StdClass;
-
 		$content->type 		= $type;
 		$content->value 	= $value;
 
 		$this->content_args[] = $content;
-
 	}
 
-	private function mount(){
-
+	private function mount()
+	{
 		$params = new StdClass;
 
 		$params->personalizations = array();
@@ -168,10 +146,10 @@ Class Sendgrid{
 		$params->personalizations[] = $personalization;
 
 		return json_encode($params);
-
 	}
 
-	public function send(){
+	public function send()
+	{
 
 		$ch = curl_init();
 
@@ -202,7 +180,6 @@ Class Sendgrid{
 		}
 
 		return $data_result;
-
 	}
 
 }
