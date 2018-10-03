@@ -3,28 +3,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Example extends CI_Controller {
 
-	public function send(){
+	public function send()
+	{
 
+		# Load de library
 		$this->load->library('Sendgrid');
 
-		$this->sendgrid->to('to-email@example.com', 'Some Name');
+		# You can add many "to:" using this method.
+		$this->sendgrid->to('someone@example.com', 'Someone');
 
-		$this->sendgrid->from('sender@example.com', 'Sender Name');
+		$this->sendgrid->from('no-reply@example.com', 'No Reply');
 
-		$this->sendgrid->reply_to('reply-to@example.com', 'Sender Name');
+		$this->sendgrid->reply_to('itsme@example.com', 'Me');
 
-		// In case you want to set a date/time to schedule the email send, uncomment the line above, usign a timestamp to set it.
-		//$this->sendgrid->send_at(<<TIMESTAMP>>);
+		# You can use the "cc" and "bcc" methods too, as above.
+
+		# Schedule the message send passing a timestamp or a "Y-m-d H:i:s" format date
+		$this->sendgrid->send_at(1538502150);
 		
-		// Using Sendgrid templates (see Sendgrid documentation)
-		//$this->sendgrid->template('d-984ba3d47f944f84b4b98ad45e7cc7d6');
+		# Use a Sendgrid template (see Sendgrid templates documentation)
+		$this->sendgrid->template('<<<TEMPLATE ID>>>');
 
-		//Using Dynamic Data to set information to templates
-		//$this->sendgrid->template_data('personal_text', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vehicula tellus enim, ut ultricies est varius id. Aliquam et velit sit amet urna accumsan ornare. Mauris nisi ligula, tempor bibendum lacus eu, mollis euismod libero. Nam hendrerit odio dui, condimentum tincidunt sapien cursus a. Ut a malesuada est. Etiam iaculis nunc quis mi dapibus iaculis. Integer pretium ex ac feugiat elementum.');
+		# You can pass dynamic data to parse into your template
+		$this->sendgrid->template_data('personal_text', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vehicula tellus enim, ut ultricies est varius id. Aliquam et velit sit amet urna accumsan ornare. Mauris nisi ligula, tempor bibendum lacus eu, mollis euismod libero. Nam hendrerit odio dui, condimentum tincidunt sapien cursus a. Ut a malesuada est. Etiam iaculis nunc quis mi dapibus iaculis. Integer pretium ex ac feugiat elementum.');
+		
+		# The Subject (note that if you are using Templates and defined the subject at
+		# template setting, this field will be ignored and the template subject will be 
+		# used instead)
+		$this->sendgrid->subject('A cool nice example');
 
-		$this->sendgrid->subject('Nevermind, just a test!');
-		$this->sendgrid->content('text/plain', 'This test is quite correct ;)');
+		# The message content (note that if you are using Templates this field will
+		# be ignored, but is always required)
+		$this->sendgrid->content('text/plain', 'My very nice example content... CI Rulezz!');
 
+		# Lets go!
 		$this->sendgrid->send();
 
 	}
