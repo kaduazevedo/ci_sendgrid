@@ -1,7 +1,7 @@
 ## Sendgrid API library for Codeigniter 3
 A simple, lightweight, minimalist, mini, tyni Codeigniter 3 library that implements Sendgrid API V3.
 
-##Features
+## Features
 
 - Support Sendgrid Templates amd Dynamic data parse;
 - File attachment;
